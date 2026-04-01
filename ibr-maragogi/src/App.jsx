@@ -5,6 +5,7 @@ import About from './pages/About/About';
 import Projects from './pages/Projects/Projects';
 import Materials from './pages/Materials/Materials';
 import FAQ from './pages/FAQ/FAQ';
+import './styles/global.css';
 
 export default function App() {
   return (
