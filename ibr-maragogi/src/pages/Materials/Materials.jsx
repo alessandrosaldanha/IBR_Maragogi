@@ -1,20 +1,39 @@
-import { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, Filter, Grid, List, Eye, Download, FileText, 
-  Presentation, Table, Image, File, X, ChevronDown, ChevronUp 
-} from 'lucide-react';
-import { materialsService } from '../../services/xano';
-import { formatDate } from '../../utils/formatDate';
-import { formatFileSize, getFileType, getFileTypeLabel } from '../../utils/fileUtils';
-import { PageLoader, InlineLoader } from '../../components/common/Loader/Loader';
-import './Materials.css';
+import { useState, useEffect, useMemo } from "react";
+import {
+  Search,
+  Filter,
+  Grid,
+  List,
+  Eye,
+  Download,
+  FileText,
+  Presentation,
+  Table,
+  Image,
+  File,
+  X,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { materialsService } from "../../services/xano";
+import { formatDate } from "../../utils/formatDate";
+import {
+  formatFileSize,
+  getFileType,
+  getFileTypeLabel,
+} from "../../utils/fileUtils";
+import {
+  PageLoader,
+  InlineLoader,
+} from "../../components/common/Loader/Loader";
+import "./Materials.css";
 
 // Category labels
 const categoryLabels = {
-  pregacoes: 'Pregações',
-  ebd: 'EBD',
-  materiais: 'Materiais',
-  documentos: 'Documentos',
+  pregacoes: "Pregações",
+  ebd: "EBD",
+  materiais: "Materiais",
+  documentos: "Documentos",
 };
 
 // File type icons
@@ -37,7 +56,7 @@ const FileTypeIcon = ({ type }) => {
 // Material Card Component
 function MaterialCard({ material, onView, onDownload }) {
   const fileType = getFileType(material.fileName);
-  const isPreviewable = ['pdf', 'image'].includes(fileType);
+  const isPreviewable = ["pdf", "image"].includes(fileType);
 
   return (
     <div className="material-card">
@@ -50,25 +69,30 @@ function MaterialCard({ material, onView, onDownload }) {
             <FileTypeIcon type={fileType} />
           </div>
         )}
-        <span className="material-type-badge">{getFileTypeLabel(fileType)}</span>
+        <span className="material-type-badge">
+          {getFileTypeLabel(fileType)}
+        </span>
       </div>
 
       {/* Content */}
       <div className="material-content">
-        <span className="material-category">{categoryLabels[material.category]}</span>
+        <span className="material-category">
+          {categoryLabels[material.category]}
+        </span>
         <h3 className="material-title">{material.title}</h3>
         {material.description && (
           <p className="material-description">{material.description}</p>
         )}
         <div className="material-meta">
-          <span className="material-date">{formatDate(material.createdAt)}</span>
-          <span className="material-size">{formatFileSize(material.fileSize)}</span>
+          <span className="material-date">
+            {formatDate(material.createdAt)}
+          </span>
         </div>
       </div>
 
       {/* Actions */}
       <div className="material-actions">
-        <button 
+        <button
           className="material-action-btn view"
           onClick={() => onView(material)}
           title="Visualizar"
@@ -76,7 +100,7 @@ function MaterialCard({ material, onView, onDownload }) {
           <Eye size={18} />
           <span>Visualizar</span>
         </button>
-        <button 
+        <button
           className="material-action-btn download"
           onClick={() => onDownload(material)}
           title="Baixar"
@@ -97,7 +121,7 @@ function FilePreviewModal({ material, onClose }) {
 
   return (
     <div className="preview-modal-overlay" onClick={onClose}>
-      <div className="preview-modal" onClick={e => e.stopPropagation()}>
+      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
         <div className="preview-modal-header">
           <h3>{material.title}</h3>
           <button className="preview-modal-close" onClick={onClose}>
@@ -105,22 +129,24 @@ function FilePreviewModal({ material, onClose }) {
           </button>
         </div>
         <div className="preview-modal-content">
-          {fileType === 'pdf' && (
+          {fileType === "pdf" && (
             <div className="preview-pdf">
-              <iframe 
-                src={material.fileUrl} 
+              <iframe
+                src={material.fileUrl}
                 title={material.title}
                 width="100%"
                 height="100%"
+                frameBorder="0"
+                allow="autoplay"
               />
             </div>
           )}
-          {fileType === 'image' && (
+          {fileType === "image" && (
             <div className="preview-image">
               <img src={material.fileUrl} alt={material.title} />
             </div>
           )}
-          {!['pdf', 'image'].includes(fileType) && (
+          {!["pdf", "image"].includes(fileType) && (
             <div className="preview-generic">
               <div className="preview-generic-icon">
                 <FileTypeIcon type={fileType} size={64} />
@@ -131,7 +157,10 @@ function FilePreviewModal({ material, onClose }) {
           )}
         </div>
         <div className="preview-modal-footer">
-          <button className="preview-download-btn" onClick={() => window.open(material.fileUrl, '_blank')}>
+          <button
+            className="preview-download-btn"
+            onClick={() => window.open(material.fileUrl, "_blank")}
+          >
             <Download size={18} />
             Baixar Arquivo
           </button>
@@ -146,15 +175,15 @@ export default function Materials() {
   const [loading, setLoading] = useState(true);
   const [materials, setMaterials] = useState([]);
   const [filteredMaterials, setFilteredMaterials] = useState([]);
-  
+
   // Filters
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [sortBy, setSortBy] = useState('date');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [viewMode, setViewMode] = useState('grid');
-  
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [viewMode, setViewMode] = useState("grid");
+
   // Modal
   const [selectedMaterial, setSelectedMaterial] = useState(null);
 
@@ -170,9 +199,29 @@ export default function Materials() {
     setLoading(true);
     try {
       const data = await materialsService.getAll();
-      setMaterials(data.records);
+
+      // O Xano geralmente retorna um array direto.
+      // Se ele retornar {records: [...]}, usamos data.records, senão usamos data.
+      const rawRecords = Array.isArray(data) ? data : data.records || [];
+
+      // Aqui fazemos a "mágica" de adaptar os nomes das colunas
+      const formattedData = rawRecords.map((item) => ({
+        ...item,
+        // O componente espera 'thumbnailUrl', o Xano manda 'cover_image.url'
+        thumbnailUrl: item.cover_image?.url || null,
+        // O componente espera 'fileUrl', o Xano manda 'file_url'
+        // E já trocamos o link do Drive para modo de visualização (preview)
+        fileUrl: item.file_url?.replace("/view?usp=sharing", "/preview"),
+        // O componente usa o nome do arquivo para saber o ícone (PDF, etc)
+        fileName: item.title + ".pdf",
+        // Como o arquivo está no Drive, o Xano não sabe o tamanho, então fixamos "PDF"
+        fileSize: 0,
+        createdAt: item.created_at,
+      }));
+
+      setMaterials(formattedData);
     } catch (error) {
-      console.error('Error loading materials:', error);
+      console.error("Error loading materials:", error);
     } finally {
       setLoading(false);
     }
@@ -184,32 +233,35 @@ export default function Materials() {
     // Search filter
     if (search) {
       const searchLower = search.toLowerCase();
-      filtered = filtered.filter(m => 
-        m.title.toLowerCase().includes(searchLower) ||
-        m.description?.toLowerCase().includes(searchLower)
+      filtered = filtered.filter(
+        (m) =>
+          m.title.toLowerCase().includes(searchLower) ||
+          m.description?.toLowerCase().includes(searchLower),
       );
     }
 
     // Category filter
     if (categoryFilter) {
-      filtered = filtered.filter(m => m.category === categoryFilter);
+      filtered = filtered.filter((m) => m.category === categoryFilter);
     }
 
     // Type filter
     if (typeFilter) {
-      filtered = filtered.filter(m => getFileType(m.fileName) === typeFilter);
+      filtered = filtered.filter((m) => getFileType(m.fileName) === typeFilter);
     }
 
     // Sort
     filtered.sort((a, b) => {
-      if (sortBy === 'date') {
+      if (sortBy === "date") {
         const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
-        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+        return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
       } else {
         const titleA = a.title.toLowerCase();
         const titleB = b.title.toLowerCase();
-        return sortOrder === 'desc' ? titleB.localeCompare(titleA) : titleA.localeCompare(titleB);
+        return sortOrder === "desc"
+          ? titleB.localeCompare(titleA)
+          : titleA.localeCompare(titleB);
       }
     });
 
@@ -217,11 +269,11 @@ export default function Materials() {
   };
 
   const clearFilters = () => {
-    setSearch('');
-    setCategoryFilter('');
-    setTypeFilter('');
-    setSortBy('date');
-    setSortOrder('desc');
+    setSearch("");
+    setCategoryFilter("");
+    setTypeFilter("");
+    setSortBy("date");
+    setSortOrder("desc");
   };
 
   const handleView = (material) => {
@@ -230,7 +282,7 @@ export default function Materials() {
 
   const handleDownload = (material) => {
     // In a real app, this would trigger file download
-    window.open(material.fileUrl, '_blank');
+    window.open(material.fileUrl, "_blank");
   };
 
   const hasActiveFilters = search || categoryFilter || typeFilter;
@@ -246,7 +298,8 @@ export default function Materials() {
         <div className="materials-hero-content">
           <h1 className="materials-hero-title">Mensagens e Materiais</h1>
           <p className="materials-hero-subtitle">
-            Acesse pregações, aulas da EBD, documentos e materiais complementares
+            Acesse pregações, aulas da EBD, documentos e materiais
+            complementares
           </p>
         </div>
       </section>
@@ -257,7 +310,7 @@ export default function Materials() {
           {/* Search */}
           <div className="materials-search">
             <Search size={18} className="search-icon" />
-            <input 
+            <input
               type="text"
               placeholder="Buscar materiais..."
               value={search}
@@ -265,7 +318,7 @@ export default function Materials() {
               className="search-input"
             />
             {search && (
-              <button className="search-clear" onClick={() => setSearch('')}>
+              <button className="search-clear" onClick={() => setSearch("")}>
                 <X size={16} />
               </button>
             )}
@@ -273,19 +326,18 @@ export default function Materials() {
 
           {/* Filter Buttons */}
           <div className="materials-filter-group">
-            <select 
+            <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="filter-select"
             >
               <option value="">Todas as Categorias</option>
-              <option value="pregacoes">Pregações</option>
+              <option value="pregações">Pregações</option>
               <option value="ebd">EBD</option>
-              <option value="materiais">Materiais</option>
               <option value="documentos">Documentos</option>
             </select>
 
-            <select 
+            <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
               className="filter-select"
@@ -295,13 +347,12 @@ export default function Materials() {
               <option value="docx">Word</option>
               <option value="pptx">PowerPoint</option>
               <option value="xlsx">Excel</option>
-              <option value="image">Imagens</option>
             </select>
 
-            <select 
+            <select
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => {
-                const [by, order] = e.target.value.split('-');
+                const [by, order] = e.target.value.split("-");
                 setSortBy(by);
                 setSortOrder(order);
               }}
@@ -316,16 +367,16 @@ export default function Materials() {
 
           {/* View Mode Toggle */}
           <div className="view-toggle">
-            <button 
-              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
+            <button
+              className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
               title="Visualização em grid"
             >
               <Grid size={18} />
             </button>
-            <button 
-              className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
+            <button
+              className={`view-btn ${viewMode === "list" ? "active" : ""}`}
+              onClick={() => setViewMode("list")}
               title="Visualização em lista"
             >
               <List size={18} />
@@ -338,8 +389,14 @@ export default function Materials() {
           <div className="active-filters">
             <span>Filtros ativos:</span>
             {search && <span className="filter-tag">{search}</span>}
-            {categoryFilter && <span className="filter-tag">{categoryLabels[categoryFilter]}</span>}
-            {typeFilter && <span className="filter-tag">{getFileTypeLabel(typeFilter)}</span>}
+            {categoryFilter && (
+              <span className="filter-tag">
+                {categoryLabels[categoryFilter]}
+              </span>
+            )}
+            {typeFilter && (
+              <span className="filter-tag">{getFileTypeLabel(typeFilter)}</span>
+            )}
             <button className="clear-filters" onClick={clearFilters}>
               Limpar filtros
             </button>
@@ -366,8 +423,8 @@ export default function Materials() {
           ) : (
             <div className={`materials-${viewMode}`}>
               {filteredMaterials.map((material, index) => (
-                <MaterialCard 
-                  key={material.id} 
+                <MaterialCard
+                  key={material.id}
                   material={material}
                   onView={handleView}
                   onDownload={handleDownload}
@@ -381,9 +438,9 @@ export default function Materials() {
 
       {/* Preview Modal */}
       {selectedMaterial && (
-        <FilePreviewModal 
-          material={selectedMaterial} 
-          onClose={() => setSelectedMaterial(null)} 
+        <FilePreviewModal
+          material={selectedMaterial}
+          onClose={() => setSelectedMaterial(null)}
         />
       )}
     </div>
