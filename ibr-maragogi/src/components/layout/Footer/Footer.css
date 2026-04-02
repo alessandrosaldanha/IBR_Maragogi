@@ -110,3 +110,11 @@
     justify-content: center;
   }
 }
+
+/* Faz o footer respeitar a sidebar no Desktop */
+@media (min-width: 1024px) {
+  .footer {
+    margin-left: 280px;
+    width: auto;
+  }
+}
