@@ -39,11 +39,6 @@ async function xanoFetch(endpoint, options = {}) {
 // 1. SERVIÇO DE MATERIAIS (CONEXÃO REAL)
 // ============================================
 export const materialsService = {
-  /**
-   * Busca todos os materiais do Xano e adapta os nomes dos campos
-   */
-  // Dentro do seu materialsService no xano.js
-
   async getAll() {
     try {
       const data = await xanoFetch("/materials");
@@ -103,7 +98,34 @@ export const materialsService = {
 
 export const projectsService = {
   async getAll() {
-    return { records: [], count: 0 };
+    // Simulando dados que viriam do Xano
+    const mockProjects = [
+      {
+        id: 1,
+        title: "Ação Social Maragogi",
+        description:
+          "Distribuição de cestas básicas e apoio às famílias da nossa região.",
+        image: {
+          url: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070",
+        },
+        status: "Em andamento",
+      },
+      {
+        id: 2,
+        title: "Reforma do Templo",
+        description:
+          "Melhorias estruturais para melhor receber nossos irmãos e visitantes.",
+        image: {
+          url: "https://images.unsplash.com/photo-1545032141-6944374970a7?q=80&w=2000",
+        },
+        status: "Planejamento",
+      },
+    ];
+
+    return {
+      records: mockProjects,
+      count: mockProjects.length,
+    };
   },
   async getById(id) {
     return null;
@@ -112,7 +134,25 @@ export const projectsService = {
 
 export const faqService = {
   async getAll() {
-    return { records: [], count: 0 };
+    const mockFaq = [
+      {
+        id: 1,
+        question: "Quais os horários dos cultos?",
+        answer:
+          "Nossos cultos principais acontecem aos Domingos às 18h e Quartas às 19h30.",
+      },
+      {
+        id: 2,
+        question: "Como faço para me batizar?",
+        answer:
+          "Procure um de nossos presbíteros após o culto ou entre em contato pelo formulário.",
+      },
+    ];
+
+    return {
+      records: mockFaq,
+      count: mockFaq.length,
+    };
   },
 };
 
