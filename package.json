@@ -1,0 +1,23 @@
+{
+  "name": "ibr_maragogi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alessandrosaldanha/IBR_Maragogi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alessandrosaldanha/IBR_Maragogi/issues"
+  },
+  "homepage": "https://github.com/alessandrosaldanha/IBR_Maragogi#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.2"
+  }
+}
